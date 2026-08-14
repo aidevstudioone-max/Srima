@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Srima — Diagnostic Centre &amp; Medical Store, Kidderpore</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='6' fill='%230E4B43'/%3E%3Cpath d='M3 12h4l2 7 4-14 2 7h6' stroke='%23E0973D' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --teal-deep:#0E4B43; --teal-mid:#1F6F63; --teal-bright:#2E9683; --teal-pale:#DCEAE4;
+    --mint-bg:#F1F6F1; --amber:#C1782C; --amber-deep:#8F5A20; --amber-bright:#E0973D; --amber-pale:#F2E2C7;
+    --paper:#FFFDF8; --ink:#152420; --ink-soft:#4D5D56; --line:#D7E1DA; --white:#ffffff;
+    --shadow-sm: 0 2px 10px rgba(14,75,67,.06);
+    --shadow-md: 0 12px 30px rgba(14,75,67,.10);
+    --shadow-lg: 0 24px 60px rgba(14,75,67,.16);
+    --mx:50%; --my:20%;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(900px 500px at 92% -10%, rgba(193,120,44,.10), transparent 60%),
+      radial-gradient(1100px 600px at -10% 0%, rgba(14,75,67,.10), transparent 55%),
+      var(--mint-bg);
+    color:var(--ink); font-family:'IBM Plex Sans', sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden;
+    position:relative;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.035; mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  h1,h2,h3{ font-family:'Fraunces', serif; margin:0; letter-spacing:-0.01em; }
+  .mono{ font-family:'IBM Plex Mono', monospace; }
+  a{color:inherit;}
+  img{max-width:100%;display:block;}
+  button{font-family:inherit;}
+  :focus-visible{ outline:2px solid var(--teal-deep); outline-offset:3px; border-radius:4px; }
+
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 clamp(20px,5vw,48px); position:relative; z-index:1; }
+  .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); display:flex; align-items:center; gap:10px;}
+  .eyebrow .idx{ color:var(--amber-deep); }
+
+  .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1); }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+  .reveal-d1{ transition-delay:.08s; } .reveal-d2{ transition-delay:.16s; } .reveal-d3{ transition-delay:.24s; }
+  @media (prefers-reduced-motion: reduce){ .reveal{ opacity:1; transform:none; transition:none; } html{ scroll-behavior:auto; } }
+
+  section{ scroll-margin-top:84px; }
+  #book, #doors, #trust, #find{ scroll-margin-top:84px; }
+
+  /* ---------- header ---------- */
+  header{ position:sticky; top:0; z-index:60; background:rgba(251,249,243,0.86); backdrop-filter:blur(10px); border-bottom:1px solid transparent; transition:border-color .25s ease, box-shadow .25s ease; }
+  header.scrolled{ border-color:var(--line); box-shadow:0 4px 20px rgba(14,75,67,.06); }
+  .nav{ display:flex; align-items:center; justify-content:space-between; padding:16px clamp(20px,5vw,48px); }
+  .brand{ display:flex; flex-direction:column; gap:2px; }
+  .wordmark{ font-family:'Fraunces', serif; font-weight:700; font-size:22px; letter-spacing:0.01em; display:flex; align-items:center; gap:8px;}
+  .wordmark .dot{ width:8px;height:8px;border-radius:50%; background:var(--amber-bright); display:inline-block; animation:blink 2.4s ease-in-out infinite; }
+  @keyframes blink{ 0%,100%{opacity:1;} 50%{opacity:.25;} }
+  .wordmark-sub{ display:none; font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:var(--ink-soft); }
+  @media(min-width:560px){ .wordmark-sub{ display:block; } }
+  .nav-links{ display:flex; gap:28px; font-size:14px; font-weight:500; }
+  .nav-links a{ position:relative; text-decoration:none; color:var(--ink-soft); padding-bottom:2px; transition:color .15s; }
+  .nav-links a::after{ content:""; position:absolute; left:0; right:0; bottom:-2px; height:1px; background:var(--teal-mid); transform:scaleX(0); transform-origin:left; transition:transform .25s ease; }
+  .nav-links a:hover{ color:var(--ink); }
+  .nav-links a:hover::after{ transform:scaleX(1); }
+  .nav-call{ display:none; }
+  @media(min-width:720px){
+    .nav-call{ display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:13px; background:var(--teal-deep); color:var(--white); padding:9px 16px; border-radius:100px; text-decoration:none; box-shadow:var(--shadow-sm); transition:box-shadow .2s, transform .2s; }
+    .nav-call:hover{ box-shadow:var(--shadow-md); transform:translateY(-1px); }
+  }
+  @media(max-width:719px){ .nav-links{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{ padding:clamp(56px,9vw,108px) 0 clamp(32px,6vw,56px); position:relative; overflow:hidden; }
+  .hero-glow{
+    position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:0;
+    background: radial-gradient(420px 420px at var(--mx) var(--my), rgba(46,150,131,.16), transparent 70%);
+    transition:background .3s ease;
+  }
+  .hero::before{ content:""; position:absolute; top:-140px; right:-160px; width:420px; height:420px; border-radius:50%; background:radial-gradient(circle, rgba(46,150,131,.20), transparent 70%); filter:blur(6px); pointer-events:none; animation:blobDrift1 13s ease-in-out infinite; }
+  .hero::after{ content:""; position:absolute; bottom:-180px; left:-160px; width:380px; height:380px; border-radius:50%; background:radial-gradient(circle, rgba(224,151,61,.18), transparent 70%); filter:blur(6px); pointer-events:none; animation:blobDrift2 15s ease-in-out infinite; }
+  @keyframes blobDrift1{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(-26px,20px) scale(1.08);} }
+  @keyframes blobDrift2{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(22px,-18px) scale(1.06);} }
+
+  .identity-row{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:18px; }
+  .identity-chip{ display:inline-flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500; letter-spacing:.03em; text-transform:uppercase; padding:9px 16px; border-radius:100px; border:1px solid var(--line); background:var(--white); box-shadow:var(--shadow-sm); animation:chipIn .6s cubic-bezier(.16,.8,.3,1) backwards; }
+  .identity-chip.teal{ color:var(--teal-deep); border-color:var(--teal-pale); }
+  .identity-chip.amber{ color:var(--amber-deep); border-color:var(--amber-pale); animation-delay:.28s; }
+  .identity-plus{ color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; font-size:13px; opacity:.7; animation:chipIn .6s ease .18s backwards; }
+  @keyframes chipIn{ from{ opacity:0; transform:translateY(8px) scale(.94); } to{ opacity:1; transform:none; } }
+
+  .marquee{ width:100%; overflow:hidden; margin-top:10px; -webkit-mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent); position:relative; z-index:2; }
+  .marquee-track{ display:flex; gap:40px; width:max-content; animation:marquee 26s linear infinite; }
+  .marquee:hover .marquee-track{ animation-play-state:paused; }
+  .marquee-item{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-soft); white-space:nowrap; }
+  .marquee-item svg{ color:var(--amber); flex:none; }
+  .marquee-item b{ color:var(--ink); font-weight:600; }
+  @keyframes marquee{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+
+  .scroll-cue{ display:flex; flex-direction:column; align-items:center; gap:6px; margin:34px auto 0; width:fit-content; opacity:.55; }
+  .scroll-cue span{ font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .scroll-chevron{ animation:chevBounce 1.8s ease-in-out infinite; }
+  @keyframes chevBounce{ 0%,100%{ transform:translateY(0); opacity:.5;} 50%{ transform:translateY(6px); opacity:1;} }
+  .float-icon{ position:absolute; opacity:.5; color:var(--teal-mid); animation:float 7s ease-in-out infinite; z-index:0; }
+  .float-icon.amber{ color:var(--amber); }
+  .float-icon.f1{ top:14%; right:8%; animation-delay:0s; }
+  .float-icon.f2{ top:62%; right:20%; animation-delay:1.4s; }
+  .float-icon.f3{ top:38%; left:4%; animation-delay:.7s; }
+  @keyframes float{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-14px) rotate(6deg);} }
+  @media (prefers-reduced-motion: reduce){ .float-icon{ animation:none; } }
+  @media (max-width:820px){ .float-icon{ display:none; } }
+
+  .hero-grid{ display:grid; gap:28px; position:relative; z-index:2; }
+  .hero h1{ font-size:clamp(36px,5.8vw,62px); line-height:1.03; font-weight:700; max-width:15ch; }
+  .hero h1 em{ font-style:normal; color:var(--teal-deep); position:relative; }
+  .hero h1 em::after{ content:""; position:absolute; left:0; right:0; bottom:.06em; height:.28em; background:var(--amber-pale); z-index:-1; border-radius:3px; transform:scaleX(0); transform-origin:left; animation:underline .7s ease-out .9s forwards; }
+  @keyframes underline{ to{ transform:scaleX(1); } }
+  .hero-sub{ max-width:52ch; font-size:clamp(16px,1.9vw,19px); color:var(--ink-soft); line-height:1.65; margin-top:18px; }
+  .hero-cta{ display:flex; flex-wrap:wrap; gap:14px; margin-top:30px; align-items:center; }
+  .badge-row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:22px; }
+  .badge{ display:inline-flex; align-items:center; gap:6px; font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--ink-soft); background:var(--white); border:1px solid var(--line); padding:7px 12px; border-radius:100px; }
+  .badge b{ color:var(--ink); }
+  .badge svg{ color:var(--amber); }
+
+  .btn{ display:inline-flex; align-items:center; gap:9px; padding:13px 22px; border-radius:100px; font-weight:500; font-size:14.5px; text-decoration:none; border:1px solid transparent; cursor:pointer; position:relative; overflow:hidden; transition:transform .18s ease, box-shadow .18s ease, background .18s ease; }
+  .btn::before{ content:""; position:absolute; top:0; left:-60%; width:40%; height:100%; background:linear-gradient(120deg, transparent, rgba(255,255,255,.4), transparent); transform:skewX(-20deg); transition:left .55s ease; pointer-events:none; }
+  .btn:hover::before{ left:130%; }
+  .btn:hover{ transform:translateY(-2px); } .btn:active{ transform:translateY(0); }
+  .btn-teal{ background:var(--teal-deep); color:var(--white); box-shadow:var(--shadow-sm);}
+  .btn-teal:hover{ background:var(--teal-mid); box-shadow:var(--shadow-md); }
+  .btn-amber{ background:var(--amber); color:var(--white); box-shadow:var(--shadow-sm);}
+  .btn-amber:hover{ background:var(--amber-deep); box-shadow:var(--shadow-md); }
+  .btn-outline{ background:var(--white); border-color:var(--line); color:var(--ink); }
+  .btn-outline:hover{ border-color:var(--teal-mid); box-shadow:var(--shadow-sm); }
+  .btn[disabled]{ opacity:.45; cursor:not-allowed; transform:none !important; box-shadow:none !important; }
+
+  .pulse-wrap{ width:100%; margin-top:44px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:18px 0; position:relative; z-index:2;}
+  .pulse-wrap svg{ width:100%; height:64px; display:block; overflow:visible; }
+  .pulse-path{ fill:none; stroke:var(--teal-deep); stroke-width:2.4; stroke-linecap:round; stroke-linejoin:round; stroke-dasharray:1400; stroke-dashoffset:1400; animation:draw 2.2s ease-out forwards; }
+  .pulse-caption{ position:absolute; right:0; top:-8px; font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
+  @keyframes draw{ to{ stroke-dashoffset:0; } }
+  @media (prefers-reduced-motion: reduce){ .pulse-path{ animation:none; stroke-dashoffset:0; } .hero h1 em::after{ animation:none; transform:scaleX(1); } #pulseDot{ display:none; } .hero::before,.hero::after{ animation:none; } .marquee-track{ animation:none; } .identity-chip,.identity-plus{ animation:none; opacity:1; transform:none; } .scroll-chevron{ animation:none; } .btn::before{ display:none; } }
+
+  section.pad{ padding:clamp(44px,7vw,84px) 0; position:relative; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:34px; }
+  .section-head h2{ font-size:clamp(27px,3.4vw,40px); font-weight:700; margin-top:8px; }
+  .rule{ height:1px; background:linear-gradient(90deg, var(--line), transparent); margin:0 0 18px; }
+
+  .doors{ display:grid; grid-template-columns:1fr; gap:24px; }
+  @media(min-width:860px){ .doors{ grid-template-columns:1fr 1fr; } }
+  .door{ background:var(--paper); border:1px solid var(--line); border-radius:20px; padding:clamp(26px,3vw,38px); position:relative; display:flex; flex-direction:column; gap:20px; box-shadow:var(--shadow-sm); transition:box-shadow .3s ease, transform .3s ease; }
+  .door:hover{ box-shadow:var(--shadow-lg); transform:translateY(-4px); }
+  .door-teal{ border-top:5px solid var(--teal-deep); } .door-amber{ border-top:5px solid var(--amber); }
+  .door-icon{ width:44px; height:44px; border-radius:14px; display:flex; align-items:center; justify-content:center; margin-bottom:-4px; transition:transform .35s cubic-bezier(.34,1.56,.64,1); }
+  .door:hover .door-icon{ transform:rotate(-8deg) scale(1.1); }
+  .door-teal .door-icon{ background:var(--teal-pale); color:var(--teal-deep); }
+  .door-amber .door-icon{ background:var(--amber-pale); color:var(--amber-deep); }
+  .door-label{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+  .door-teal .door-label{ color:var(--teal-mid); } .door-amber .door-label{ color:var(--amber-deep); }
+  .door h3{ font-size:clamp(22px,2.6vw,28px); font-weight:700; }
+  .rating{ display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--ink-soft); }
+  .rating b{ color:var(--ink); font-size:15px; } .stars{ color:var(--amber); letter-spacing:1px; }
+  .door-desc{ color:var(--ink-soft); line-height:1.65; font-size:15px; }
+  .tag-list{ display:flex; flex-wrap:wrap; gap:8px; margin:0; padding:0; list-style:none; }
+  .tag-list li{ font-size:13px; padding:6px 12px; border-radius:100px; border:1px solid var(--line); background:var(--white); transition:transform .15s, box-shadow .15s; }
+  .tag-list li:hover{ transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .door-teal .tag-list li{ color:var(--teal-deep); } .door-amber .tag-list li{ color:var(--amber-deep); }
+  .door-meta{ margin-top:auto; border-top:1px dashed var(--line); padding-top:18px; display:grid; gap:10px; font-size:14px; }
+  .door-meta-row{ display:flex; gap:10px; align-items:flex-start; }
+  .door-meta-row svg{ flex:none; margin-top:2px; }
+  .door-meta-row .mono{ font-size:13.5px; }
+  .door-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .btn-sm{ padding:10px 16px; font-size:13.5px; }
+
+  /* ---------- booking ---------- */
+  .booking{ background:var(--paper); border:1px solid var(--line); border-radius:24px; padding:clamp(28px,4vw,48px); box-shadow:var(--shadow-md); position:relative; overflow:hidden; }
+  .booking::before{ content:""; position:absolute; top:-120px; right:-100px; width:300px; height:300px; border-radius:50%; background:radial-gradient(circle, rgba(46,150,131,.14), transparent 70%); pointer-events:none; }
+  .booking-head{ display:flex; gap:16px; align-items:flex-start; margin-bottom:24px; position:relative; z-index:1;}
+  .booking-head .door-icon{ background:var(--teal-pale); color:var(--teal-deep); }
+  .booking-head h3{ font-size:clamp(22px,2.8vw,28px); font-weight:700; }
+  .booking-head p{ margin:6px 0 0; color:var(--ink-soft); font-size:14.5px; max-width:48ch; }
+  .steps{ display:flex; gap:0; margin-bottom:30px; position:relative; z-index:1; flex-wrap:wrap; }
+  .step{ display:flex; align-items:center; gap:9px; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); padding-right:22px; }
+  .step .n{ width:22px; height:22px; border-radius:50%; background:var(--teal-pale); color:var(--teal-deep); display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:600; }
+  .step-sep{ width:26px; height:1px; background:var(--line); align-self:center; margin-right:22px; }
+  .booking-form{ display:grid; gap:26px; position:relative; z-index:1; }
+  .field-row{ display:grid; gap:18px; }
+  @media(min-width:680px){ .field-row.cols-2{ grid-template-columns:1fr 1fr; } }
+  .field label{ display:block; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); margin-bottom:8px; }
+  .field input[type=text], .field input[type=tel], .field input[type=date], .field select{ width:100%; padding:13px 14px; border-radius:12px; border:1px solid var(--line); background:var(--white); font-family:'IBM Plex Sans', sans-serif; font-size:15px; color:var(--ink); transition:border-color .15s, box-shadow .15s; }
+  .field input:focus, .field select:focus{ border-color:var(--teal-mid); box-shadow:0 0 0 3px rgba(31,111,99,.14); outline:none; }
+  .slot-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(96px,1fr)); gap:10px; }
+  .slot{ padding:11px 8px; border-radius:10px; border:1px solid var(--line); background:var(--white); font-family:'IBM Plex Mono', monospace; font-size:13px; text-align:center; cursor:pointer; transition:all .15s ease; }
+  .slot:hover{ border-color:var(--teal-mid); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .slot.selected{ background:var(--teal-deep); color:var(--white); border-color:var(--teal-deep); }
+  .slot[disabled]{ opacity:.35; cursor:not-allowed; text-decoration:line-through; }
+  .slot[disabled]:hover{ transform:none; box-shadow:none; border-color:var(--line); }
+  .form-msg{ font-size:13.5px; color:var(--amber-deep); font-family:'IBM Plex Mono', monospace; min-height:18px; }
+  .booking-submit{ display:flex; align-items:center; gap:16px; flex-wrap:wrap; }
+  .confirm-card{ margin-top:6px; border-radius:16px; border:1px solid var(--teal-pale); background:var(--teal-pale); padding:22px 24px; display:none; gap:14px; flex-direction:column; position:relative; z-index:1; }
+  .confirm-card.show{ display:flex; animation:pop .4s cubic-bezier(.2,.9,.3,1.2); }
+  @keyframes pop{ from{ opacity:0; transform:scale(.96) translateY(6px);} to{opacity:1; transform:none;} }
+  .confirm-card h4{ font-family:'Fraunces',serif; font-size:18px; margin:0; color:var(--teal-deep); display:flex; align-items:center; gap:8px;}
+  .confirm-card .mono{ font-size:13.5px; color:var(--ink); line-height:1.7; }
+  .confirm-actions{ display:flex; gap:10px; flex-wrap:wrap; margin-top:4px; }
+  .check-pop{ width:20px; height:20px; border-radius:50%; background:var(--teal-deep); color:#fff; display:flex; align-items:center; justify-content:center; flex:none; }
+
+  /* ---------- highlights strip ---------- */
+  .highlights{ display:grid; gap:18px; grid-template-columns:1fr; }
+  @media(min-width:720px){ .highlights{ grid-template-columns:repeat(3,1fr); } }
+  .highlight{ background:var(--paper); border:1px solid var(--line); border-radius:16px; padding:22px; box-shadow:var(--shadow-sm); transition:transform .25s, box-shadow .25s; }
+  .highlight:hover{ transform:translateY(-3px); box-shadow:var(--shadow-md); }
+  .highlight .hi-icon{ width:38px; height:38px; border-radius:11px; background:var(--amber-pale); color:var(--amber-deep); display:flex; align-items:center; justify-content:center; margin-bottom:14px; }
+  .highlight p{ margin:0; font-size:14px; color:var(--ink-soft); line-height:1.6; }
+  .highlight strong{ display:block; font-family:'Fraunces',serif; font-size:16.5px; color:var(--ink); margin-bottom:6px; font-weight:600;}
+
+  /* ---------- why one family ---------- */
+  .trust{ background:linear-gradient(155deg, var(--teal-deep), #0A3A34); color:var(--white); border-radius:26px; box-shadow:var(--shadow-lg); position:relative; overflow:hidden; }
+  .trust::after{ content:""; position:absolute; inset:0; background:radial-gradient(500px 300px at 85% 10%, rgba(224,151,61,.16), transparent 60%); pointer-events:none; }
+  .trust-inner{ padding:clamp(32px,5vw,58px); display:grid; gap:32px; position:relative; z-index:1;}
+  @media(min-width:800px){ .trust-inner{ grid-template-columns: 0.9fr 1.1fr; align-items:center; } }
+  .trust h2{ color:var(--white); font-size:clamp(24px,3vw,32px); max-width:16ch; }
+  .trust-notes{ display:grid; gap:22px; }
+  .trust-note{ display:flex; gap:14px; }
+  .trust-note .num{ font-family:'IBM Plex Mono', monospace; color:var(--amber-bright); font-size:13px; padding-top:3px; }
+  .trust-note p{ margin:0; color:#DCEAE4; font-size:15px; line-height:1.65; }
+  .trust-note strong{ color:var(--white); display:block; margin-bottom:3px; font-family:'Fraunces',serif; font-weight:600; font-size:16px;}
+
+  .find-grid{ display:grid; gap:20px; }
+  @media(min-width:860px){ .find-grid{ grid-template-columns:1fr 1fr; } }
+  .find-card{ border:1px solid var(--line); border-radius:18px; padding:26px; background:var(--paper); display:flex; flex-direction:column; gap:14px; box-shadow:var(--shadow-sm); transition:box-shadow .3s, transform .3s; }
+  .find-card:hover{ box-shadow:var(--shadow-md); transform:translateY(-3px); }
+  .find-card h3{ font-size:19px; font-weight:700; }
+  .find-card .mono{ font-size:13.5px; color:var(--ink-soft); line-height:1.7;}
+
+  footer{ border-top:1px solid var(--line); padding:clamp(30px,5vw,42px) 0 calc(clamp(30px,5vw,42px) + 70px); margin-top:24px; }
+  @media(min-width:640px){ footer{ padding-bottom:clamp(30px,5vw,42px); } }
+  .foot-grid{ display:grid; gap:24px; }
+  @media(min-width:720px){ .foot-grid{ grid-template-columns:1.2fr 1fr 1fr; } }
+  .foot-grid .mono{ font-size:13px; color:var(--ink-soft); line-height:1.75; }
+  .foot-title{ font-family:'Fraunces',serif; font-weight:700; margin-bottom:8px; }
+  .foot-bottom{ margin-top:28px; padding-top:18px; border-top:1px solid var(--line); font-size:12.5px; color:var(--ink-soft); display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+
+  /* ---------- mobile sticky cta ---------- */
+  .mobile-cta{ position:fixed; left:0; right:0; bottom:0; z-index:70; display:flex; gap:10px; padding:12px 16px calc(12px + env(safe-area-inset-bottom)); background:rgba(255,253,248,.92); backdrop-filter:blur(10px); border-top:1px solid var(--line); box-shadow:0 -8px 24px rgba(14,75,67,.08); transform:translateY(0); transition:transform .3s ease; }
+  .mobile-cta a{ flex:1; justify-content:center; }
+  @media(min-width:640px){ .mobile-cta{ display:none; } }
+</style>
+</head>
+<body>
+
+<div class="hero-glow" id="heroGlow"></div>
+
+<header id="siteHeader">
+  <div class="nav wrap">
+    <div class="brand">
+      <div class="wordmark">SRIMA <span class="dot"></span></div>
+      <span class="wordmark-sub">Diagnostic Centre &amp; Medical Store</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#doors">The two doors</a>
+      <a href="#book">Book a test</a>
+      <a href="#trust">Why one family</a>
+      <a href="#find">Find us</a>
+    </nav>
+    <a class="nav-call" href="tel:+919163189426">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      Call the diagnostic desk
+    </a>
+  </div>
+</header>
+
+<main>
+  <!-- HERO -->
+  <section class="hero">
+    <svg class="float-icon f1" width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg>
+    <svg class="float-icon amber f2" width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10.5 20.5 3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7Z"/><path d="M8.5 8.5 15 15"/></svg>
+    <svg class="float-icon f3" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+    <div class="wrap">
+      <div class="hero-grid">
+        <div class="reveal is-visible">
+          <p class="eyebrow"><span class="idx">◆</span> Khidirpur, Kolkata — 700023</p>
+          <div class="identity-row">
+            <span class="identity-chip teal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg> Diagnostic Centre</span>
+            <span class="identity-plus">+</span>
+            <span class="identity-chip amber"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5 3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7Z"/><path d="M8.5 8.5 15 15"/></svg> Medical Store</span>
+          </div>
+          <h1>Two doors on the<br>same road. <em>One family</em><br>looking after your health.</h1>
+          <p class="hero-sub">Srima Diagnostic Centre runs the tests. Srima Medical fills the prescription. Same people, five minutes' walk apart, both run by the same family that's known this neighbourhood for years.</p>
+          <div class="hero-cta">
+            <a class="btn btn-teal" href="#book">Book a test</a>
+            <a class="btn btn-outline" href="#doors">See both doors</a>
+            <a class="btn btn-outline" href="tel:+919748671821">Call the pharmacy</a>
+          </div>
+          <div class="badge-row">
+            <span class="badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.1-.7z"/></svg> <b>4.7★</b> diagnostics · 20 reviews</span>
+            <span class="badge"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.1-.7z"/></svg> <b>4.8★</b> pharmacy · 14 reviews</span>
+            <span class="badge">Closed Sundays, both doors</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pulse-wrap">
+        <span class="pulse-caption mono">32A HARI SAVA ST — 92 DIAMOND HARBOUR RD</span>
+        <svg viewBox="0 0 1200 64" preserveAspectRatio="none" aria-hidden="true">
+          <path id="pulsePath" class="pulse-path" d="M0,32 L160,32 L190,32 L205,10 L222,56 L240,32 L280,32 L620,32 L650,32 L665,14 L682,50 L700,32 L740,32 L1050,32 L1075,32 L1090,8 L1107,54 L1124,32 L1200,32" />
+          <circle id="pulseDot" r="5" fill="var(--amber-bright)">
+            <animateMotion dur="4.5s" begin="2.3s" repeatCount="indefinite">
+              <mpath href="#pulsePath"/>
+            </animateMotion>
+          </circle>
+        </svg>
+      </div>
+
+      <div class="marquee" aria-hidden="true">
+        <div class="marquee-track" id="marqueeTrack"></div>
+      </div>
+
+      <div class="scroll-cue">
+        <span>Scroll</span>
+        <svg class="scroll-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE TWO DOORS -->
+  <section class="pad" id="doors">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div><p class="eyebrow"><span class="idx">01</span> The two doors</p><h2>Test here, treat there.</h2></div>
+        <p class="hero-sub" style="margin:0;max-width:34ch;">Walk in for a blood test at one, walk out with your medicine at the other.</p>
+      </div>
+
+      <div class="doors">
+        <article class="door door-teal reveal reveal-d1">
+          <div class="door-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg></div>
+          <div><p class="door-label">Door one · Testing &amp; reports</p><h3>Srima Diagnostic Centre</h3></div>
+          <div class="rating"><span class="stars">★★★★★</span> <b class="cnt" data-target="4.7">0</b> / 5 · <span><b class="cnt" data-target="20">0</b> Google reviews</span></div>
+          <p class="door-desc">Pathology, radiology and cardiac tests under one roof, with technical staff patients describe as careful and clean-handed, and results that come back on time. Can't make it in? They'll send someone to your door for sample collection.</p>
+          <ul class="tag-list"><li>Pathology &amp; blood work</li><li>X-ray</li><li>ECG</li><li>EEG</li><li>3D Echo</li><li>Full health check-ups</li><li>Home sample collection</li></ul>
+          <div class="door-meta">
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E4B43" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="mono">Mon–Sat, 8:00 AM – 8:00 PM · Closed Sunday</span></div>
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E4B43" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="mono">32A, Hari Sava St, Kidderpore, Kolkata 700023</span></div>
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0E4B43" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="mono">+91 91631 89426</span></div>
+          </div>
+          <div class="door-actions"><a class="btn btn-teal btn-sm" href="#book">Book a test</a><a class="btn btn-outline btn-sm" href="https://www.google.com/maps/place/Srima+Diagnostic+Centre,+32A,+Hari+Sava+St,+Kidderpore,+Kolkata,+West+Bengal+700023" target="_blank" rel="noopener">Get directions</a></div>
+        </article>
+
+        <article class="door door-amber reveal reveal-d2">
+          <div class="door-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.5 20.5 3.5 13.5a5 5 0 1 1 7-7l7 7a5 5 0 1 1-7 7Z"/><path d="M8.5 8.5 15 15"/></svg></div>
+          <div><p class="door-label">Door two · Medicine &amp; counsel</p><h3>Srima Medical</h3></div>
+          <div class="rating"><span class="stars">★★★★★</span> <b class="cnt" data-target="4.8">0</b> / 5 · <span><b class="cnt" data-target="14">0</b> Google reviews</span></div>
+          <p class="door-desc">A neighbourhood pharmacy that dispenses what's actually prescribed rather than steering you to generics, with staff regulars come back for by name. Two minutes from Khidirpur market, with room to park outside — open late, every day but Sunday.</p>
+          <ul class="tag-list"><li>Prescription medicine</li><li>Genuine brands, not substitutes</li><li>Blood tests</li><li>USG &amp; X-ray</li><li>ECG &amp; Echo</li><li>Parking outside</li></ul>
+          <div class="door-meta">
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8F5A20" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="mono">Mon–Sat, 9:00 AM – 11:00 PM · Closed Sunday</span></div>
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8F5A20" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg><span class="mono">92, Diamond Harbour Rd, Kidderpore, Kolkata 700023</span></div>
+            <div class="door-meta-row"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8F5A20" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg><span class="mono">+91 97486 71821</span></div>
+          </div>
+          <div class="door-actions"><a class="btn btn-amber btn-sm" href="tel:+919748671821">Call the pharmacy</a><a class="btn btn-outline btn-sm" href="https://www.google.com/maps/place/Srima+Medical,+92,+Diamond+Harbour+Rd,+Kidderpore,+Kolkata,+West+Bengal+700023" target="_blank" rel="noopener">Get directions</a></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOOK A TEST -->
+  <section class="pad" id="book">
+    <div class="wrap">
+      <p class="eyebrow reveal"><span class="idx">02</span> Book ahead</p>
+      <div class="booking reveal" style="margin-top:14px;">
+        <div class="booking-head">
+          <div class="door-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg></div>
+          <div><h3>Book a test at the Diagnostic Centre</h3><p>Pick a date and time that suits you, and we'll hold the slot. Closed Sundays — pick any other day between 8 AM and 8 PM.</p></div>
+        </div>
+
+        <div class="steps">
+          <div class="step"><span class="n">1</span> Test &amp; time</div>
+          <div class="step-sep"></div>
+          <div class="step"><span class="n">2</span> Your details</div>
+          <div class="step-sep"></div>
+          <div class="step"><span class="n">3</span> Confirm on WhatsApp</div>
+        </div>
+
+        <form class="booking-form" id="bookingForm">
+          <div class="field-row cols-2">
+            <div class="field"><label for="testType">Test</label>
+              <select id="testType" name="testType">
+                <option>Pathology / Blood work</option><option>X-ray</option><option>ECG</option><option>EEG</option><option>3D Echo</option><option>Full health check-up</option><option>Home sample collection</option>
+              </select>
+            </div>
+            <div class="field"><label for="visitDate">Date</label><input type="date" id="visitDate" name="visitDate" required></div>
+          </div>
+
+          <div class="field">
+            <label>Time slot</label>
+            <div class="slot-grid" id="slotGrid"></div>
+          </div>
+
+          <div class="field-row cols-2">
+            <div class="field"><label for="fullName">Your name</label><input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" autocomplete="name" required></div>
+            <div class="field"><label for="phoneNo">Your phone number</label><input type="tel" id="phoneNo" name="phoneNo" placeholder="e.g. 98765 43210" autocomplete="tel" required></div>
+          </div>
+          <p class="form-msg" id="formMsg"></p>
+
+          <div class="booking-submit">
+            <button type="submit" class="btn btn-teal" id="submitBtn">Request this slot</button>
+            <span class="mono" style="font-size:12.5px;color:var(--ink-soft);">We'll confirm by phone or WhatsApp before your visit.</span>
+          </div>
+
+          <div class="confirm-card" id="confirmCard">
+            <h4><span class="check-pop">✓</span> Slot requested — one step left</h4>
+            <p class="mono" id="confirmSummary"></p>
+            <p class="mono" style="color:var(--ink-soft);">Tap below to send this straight to the diagnostic desk. They'll confirm it's held for you.</p>
+            <div class="confirm-actions">
+              <a class="btn btn-teal btn-sm" id="waLink" href="#" target="_blank" rel="noopener">Confirm on WhatsApp</a>
+              <a class="btn btn-outline btn-sm" href="tel:+919163189426">Or call to confirm</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY ONE FAMILY -->
+  <section class="pad" id="trust">
+    <div class="wrap">
+      <p class="eyebrow reveal"><span class="idx">03</span> Why one family</p>
+      <div class="trust reveal" style="margin-top:14px;">
+        <div class="trust-inner">
+          <h2>Why it helps that it's one family running both.</h2>
+          <div class="trust-notes">
+            <div class="trust-note"><span class="num">01</span><p><strong>Nothing gets lost between the test and the tablet.</strong>Your report from the diagnostic centre and your prescription at the pharmacy are read by people who talk to each other daily, not two strangers.</p></div>
+            <div class="trust-note"><span class="num">02</span><p><strong>One standard of care, two counters.</strong>The same attention to hygiene and honesty that patients mention about the test centre carries over to how the pharmacy dispenses medicine.</p></div>
+            <div class="trust-note"><span class="num">03</span><p><strong>Built for people who can't easily travel.</strong>Home sample collection on the diagnostic side means an elderly patient can get tested without leaving the house.</p></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlights" style="margin-top:22px;">
+        <div class="highlight reveal reveal-d1"><div class="hi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l2.9 6.3L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.1-.7z"/></svg></div><strong>4.7–4.8★ across both doors</strong><p>34 combined Google reviews, mostly on courteous staff and clean, accurate work.</p></div>
+        <div class="highlight reveal reveal-d2"><div class="hi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M2 12h20"/></svg></div><strong>Five minutes apart</strong><p>Both doors sit inside Khidirpur, an easy walk from the market on Diamond Harbour Road.</p></div>
+        <div class="highlight reveal reveal-d3"><div class="hi-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></div><strong>Open late, six days a week</strong><p>The pharmacy stays open till 11 PM. Only Sunday is a day off for both.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FIND US -->
+  <section class="pad" id="find">
+    <div class="wrap">
+      <p class="eyebrow reveal"><span class="idx">04</span> Find us</p>
+      <div class="section-head reveal" style="margin-top:6px;"><h2>Two doors, one map.</h2></div>
+      <div class="find-grid">
+        <div class="find-card reveal reveal-d1">
+          <p class="door-label" style="color:var(--teal-mid);">Srima Diagnostic Centre</p>
+          <h3>32A, Hari Sava St</h3>
+          <p class="mono">Kidderpore, Kolkata, West Bengal 700023<br>Mon–Sat · 8:00 AM – 8:00 PM<br>+91 91631 89426</p>
+          <a class="btn btn-teal" href="https://www.google.com/maps/place/Srima+Diagnostic+Centre,+32A,+Hari+Sava+St,+Kidderpore,+Kolkata,+West+Bengal+700023" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+        <div class="find-card reveal reveal-d2">
+          <p class="door-label" style="color:var(--amber-deep);">Srima Medical</p>
+          <h3>92, Diamond Harbour Rd</h3>
+          <p class="mono">Kidderpore, Kolkata, West Bengal 700023<br>Mon–Sat · 9:00 AM – 11:00 PM<br>+91 97486 71821</p>
+          <a class="btn btn-amber" href="https://www.google.com/maps/place/Srima+Medical,+92,+Diamond+Harbour+Rd,+Kidderpore,+Kolkata,+West+Bengal+700023" target="_blank" rel="noopener">Open in Google Maps</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div><p class="foot-title">SRIMA</p><p class="mono">Two doors in Khidirpur, run by one family: testing at the Diagnostic Centre, medicine at Srima Medical. Both closed Sundays.</p></div>
+      <div><p class="foot-title">Diagnostic Centre</p><p class="mono">32A, Hari Sava St<br>Kidderpore, Kolkata 700023<br>+91 91631 89426</p></div>
+      <div><p class="foot-title">Medical Store</p><p class="mono">92, Diamond Harbour Rd<br>Kidderpore, Kolkata 700023<br>+91 97486 71821</p></div>
+    </div>
+    <div class="foot-bottom"><span>© 2026 Srima Diagnostic Centre &amp; Srima Medical, Khidirpur.</span><span>Ratings and hours as listed on Google Maps.</span></div>
+  </div>
+</footer>
+
+<div class="mobile-cta">
+  <a class="btn btn-teal" href="#book">Book a test</a>
+  <a class="btn btn-outline" href="tel:+919163189426">Call</a>
+</div>
+
+<script>
+  // service marquee
+  const marqueeItems = [
+    "Pathology & Blood Work","X-Ray","ECG","EEG","3D Echo","Home Sample Collection",
+    "Prescription Medicine","Genuine Brands","Full Health Check-ups","USG"
+  ];
+  const dotIcon = '<svg width="6" height="6" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="12"/></svg>';
+  const track = document.getElementById('marqueeTrack');
+  if (track) {
+    const itemsHtml = marqueeItems.map(t => `<span class="marquee-item">${dotIcon}<b>${t}</b></span>`).join('');
+    track.innerHTML = itemsHtml + itemsHtml;
+  }
+
+  const header = document.getElementById('siteHeader');
+  window.addEventListener('scroll', () => header.classList.toggle('scrolled', window.scrollY > 8));
+
+  // hero mouse-parallax glow (pointer devices only)
+  const hero = document.querySelector('.hero');
+  const glow = document.getElementById('heroGlow');
+  if (window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    hero.addEventListener('mousemove', (e) => {
+      const r = hero.getBoundingClientRect();
+      glow.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      glow.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  }
+
+  // scroll reveal
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  // count-up ratings
+  const counters = document.querySelectorAll('.cnt');
+  const cIo = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      const el = entry.target;
+      const target = parseFloat(el.dataset.target);
+      const isDecimal = el.dataset.target.includes('.');
+      const dur = 1100; const start = performance.now();
+      function tick(now){
+        const p = Math.min(1, (now - start) / dur);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const val = target * eased;
+        el.textContent = isDecimal ? val.toFixed(1) : Math.round(val);
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+      cIo.unobserve(el);
+    });
+  }, { threshold: 0.6 });
+  counters.forEach(el => cIo.observe(el));
+
+  // ---- booking widget ----
+  const dateInput = document.getElementById('visitDate');
+  const slotGrid = document.getElementById('slotGrid');
+  const formMsg = document.getElementById('formMsg');
+  const confirmCard = document.getElementById('confirmCard');
+  const confirmSummary = document.getElementById('confirmSummary');
+  const waLink = document.getElementById('waLink');
+
+  const today = new Date();
+  const iso = d => d.toISOString().split('T')[0];
+  dateInput.min = iso(today);
+  let defaultDate = new Date(today);
+  if (defaultDate.getDay() === 0) defaultDate.setDate(defaultDate.getDate() + 1);
+  dateInput.value = iso(defaultDate);
+
+  const HOURS = ["8:00 AM","9:00 AM","10:00 AM","11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM"];
+  let selectedSlot = null;
+
+  function buildSlots(){
+    slotGrid.innerHTML = "";
+    selectedSlot = null;
+    const d = new Date(dateInput.value + "T00:00:00");
+    const isSunday = d.getDay() === 0;
+    const isToday = iso(d) === iso(today);
+    const nowHour = today.getHours();
+
+    HOURS.forEach(label => {
+      const btn = document.createElement('button');
+      btn.type = "button"; btn.className = "slot"; btn.textContent = label;
+      let disabled = isSunday;
+      if (!disabled && isToday) {
+        const slotHour24 = parseInt(label) + (label.includes('PM') && !label.startsWith('12') ? 12 : 0);
+        if (slotHour24 <= nowHour) disabled = true;
+      }
+      if (disabled) btn.disabled = true;
+      btn.addEventListener('click', () => {
+        slotGrid.querySelectorAll('.slot').forEach(s => s.classList.remove('selected'));
+        btn.classList.add('selected'); selectedSlot = label; formMsg.textContent = "";
+      });
+      slotGrid.appendChild(btn);
+    });
+    formMsg.textContent = isSunday ? "The centre is closed on Sundays — please pick another date." : "";
+  }
+  buildSlots();
+  dateInput.addEventListener('change', buildSlots);
+
+  document.getElementById('bookingForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('fullName').value.trim();
+    const phone = document.getElementById('phoneNo').value.trim();
+    const test = document.getElementById('testType').value;
+    const date = dateInput.value;
+    const d = new Date(date + "T00:00:00");
+
+    if (d.getDay() === 0) { formMsg.textContent = "The centre is closed on Sundays — please pick another date."; return; }
+    if (!selectedSlot) { formMsg.textContent = "Please choose a time slot."; return; }
+    if (!name || !phone) { formMsg.textContent = "Please add your name and phone number."; return; }
+
+    const prettyDate = d.toLocaleDateString('en-IN', { weekday:'long', day:'numeric', month:'long' });
+    confirmSummary.innerHTML = `${name} · ${phone}<br>${test}<br>${prettyDate}, ${selectedSlot}`;
+
+    const msg = `Hello Srima Diagnostic Centre, I'd like to book a slot.%0AName: ${encodeURIComponent(name)}%0APhone: ${encodeURIComponent(phone)}%0ATest: ${encodeURIComponent(test)}%0ADate: ${encodeURIComponent(prettyDate)}%0ATime: ${encodeURIComponent(selectedSlot)}`;
+    waLink.href = `https://wa.me/919163189426?text=${msg}`;
+
+    confirmCard.classList.add('show');
+    confirmCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
+</script>
+
+</body>
+</html>
