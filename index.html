@@ -43,6 +43,7 @@
   .wrap{ max-width:1120px; margin:0 auto; padding:0 clamp(20px,5vw,48px); position:relative; z-index:1; }
   .eyebrow{ font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); display:flex; align-items:center; gap:10px;}
   .eyebrow .idx{ color:var(--amber-deep); }
+  .lottie-spark{ display:inline-block; width:20px; height:20px; }
 
   .reveal{ opacity:0; transform:translateY(22px); transition:opacity .7s cubic-bezier(.16,.8,.3,1), transform .7s cubic-bezier(.16,.8,.3,1); }
   .reveal.is-visible{ opacity:1; transform:translateY(0); }
@@ -283,7 +284,7 @@
     <div class="wrap">
       <div class="hero-grid">
         <div class="reveal is-visible">
-          <p class="eyebrow"><span class="idx">◆</span> Khidirpur, Kolkata — 700023</p>
+          <p class="eyebrow"><span class="idx">◆</span> Khidirpur, Kolkata — 700023 <span id="lottieSpark" class="lottie-spark" aria-hidden="true"></span></p>
           <div class="identity-row">
             <span class="identity-chip teal"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l2 8 4-16 2 8h6"/></svg> Diagnostic Centre</span>
             <span class="identity-plus">+</span>
@@ -609,6 +610,12 @@
     confirmCard.classList.add('show');
     confirmCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/lottie-web@5.12.2/build/player/lottie.min.js"></script>
+<script>
+  fetch('lottie/pulse-spark.json').then((r) => r.json()).then((data) => {
+    if (window.lottie) lottie.loadAnimation({ container: document.getElementById('lottieSpark'), renderer: 'svg', loop: true, autoplay: true, animationData: data });
+  }).catch(() => {});
 </script>
 
 </body>
