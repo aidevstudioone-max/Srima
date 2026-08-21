@@ -646,19 +646,28 @@
 
   async function initThree(){
     try {
-      const THREE = await import('https://unpkg.com/three@0.160.0/build/three.module.js');
+      const THREE = await import('https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js');
       const renderer = new THREE.WebGLRenderer({ canvas: heroCanvas, alpha: true, antialias: true });
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
       camera.position.set(0, 0, 9);
 
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      let sized = false, sizeAttempts = 0;
       function sizeRenderer(){
         const w = heroSection.clientWidth, h = heroSection.clientHeight;
-        if (!w || !h) { requestAnimationFrame(sizeRenderer); return; }
+        if (!w || !h) {
+          if (sizeAttempts++ < 120) requestAnimationFrame(sizeRenderer);
+          return;
+        }
         renderer.setSize(w, h, false);
         camera.aspect = w / h;
         camera.updateProjectionMatrix();
+        if (!sized) {
+          sized = true;
+          heroCanvas.classList.add('is-ready');
+          document.querySelectorAll('.hero .float-icon').forEach(el => el.style.display = 'none');
+        }
       }
       sizeRenderer();
       window.addEventListener('resize', sizeRenderer);
@@ -699,8 +708,6 @@
         requestAnimationFrame(animate);
       }
       animate();
-      heroCanvas.classList.add('is-ready');
-      document.querySelectorAll('.hero .float-icon').forEach(el => el.style.display = 'none');
     } catch (err) {
       // WebGL unavailable, or the CDN import was blocked — the flat SVG
       // float-icons already in the hero markup stand in as a fallback.
